@@ -11,7 +11,7 @@ export default function () {
   return (
     <div>
       <h1>Hello {hello}</h1>
-      <img src="template/static/example.avif" />
+      <img src="/static/example.avif" />
     </div>
   );
 }

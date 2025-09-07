@@ -23,16 +23,16 @@ async function resolveRoutes(dir: string) {
   }
 }
 
-async function resolveStaticAssets(dir: string) {
+async function resolveStaticAssets(root: string, dir: string) {
   for await (const entry of Deno.readDir(dir)) {
     const routeName = `${dir}/${entry.name}`;
     if (entry.isDirectory) {
-      resolveStaticAssets(routeName);
+      resolveStaticAssets(root, routeName);
     } else {
       const { href } = new URL(routeName, import.meta.url);
       const resp = await fetch(href);
 
-      const key = routeName.replace(Deno.cwd(), "");
+      const key = routeName.replace(root, "");
       const bytes = new Uint8Array(await resp.arrayBuffer());
       assets.set(key, bytes);
     }
@@ -44,7 +44,7 @@ async function engine(config: EngineConfig) {
   const staticDir = [config.rootDir, "static"].join("/");
 
   await resolveRoutes(routesDir);
-  await resolveStaticAssets(staticDir);
+  await resolveStaticAssets(config.rootDir, staticDir);
   log(routes, assets);
 
   return {
@@ -147,7 +147,7 @@ function devEngine(config: EngineConfig) {
       const { pathname } = new URL(request.url);
 
       if (pathname.includes("/static/")) {
-        const { href } = new URL(`${Deno.cwd()}${pathname}`, import.meta.url);
+        const { href } = new URL(`${root}${pathname}`, import.meta.url);
         const resp = await fetch(href);
 
         if (!resp.ok) {
