@@ -175,9 +175,9 @@ function devEngine(config: EngineConfig) {
 
       if (pathname.includes("/api/")) {
         const apiPath = pathname.replace(/^\//, "").replace(/\//g, ".");
-        const url = buildImportUrl(`${routes}/${apiPath}.ts`, config.rootDir);
-        console.log(":::log >> resolve api >> url:::", url);
-        const { loader }: RouteHandler = await config.moduleLoader(url);
+        const { loader }: RouteHandler = await config.moduleLoader(
+          `${routes}/${apiPath}.ts`,
+        );
 
         const loaderFnRes =
           loader instanceof Function ? await loader(request) : null;
@@ -192,9 +192,9 @@ function devEngine(config: EngineConfig) {
 
       try {
         const routeName = pathname === "/" ? "/index.tsx" : `${pathname}.tsx`;
-        const url = buildImportUrl(`${routes}${routeName}`, config.rootDir);
-        console.log(":::log >> url:::", url);
-        const handler: RouteHandler = await config.moduleLoader(url);
+        const handler: RouteHandler = await config.moduleLoader(
+          `${routes}${routeName}`,
+        );
 
         if (!handler) {
           return new Response("hello not found", {
