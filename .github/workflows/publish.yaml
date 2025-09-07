@@ -1,0 +1,21 @@
+name: Publish
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish package
+        run: |
+          echo 'cd into lib directory'
+          cd lib
+          echo 'publishing...'
+          npx jsr publish
+          echo 'done!!!'
