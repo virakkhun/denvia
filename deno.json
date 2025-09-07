@@ -1,0 +1,19 @@
+{
+  "enable": true,
+  "tasks": {
+    "dev": "MODE=development deno run -A --watch server.ts",
+    "start:prod": "MODE=production deno run -A server.ts"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "react": "npm:react@^19.0.0",
+    "react-dom": "npm:react-dom@^19.0.0",
+    "@types/react": "npm:@types/react@^19.0.1"
+  },
+  "workspace": ["./lib/"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "jsxImportSourceTypes": "@types/react"
+  }
+}
