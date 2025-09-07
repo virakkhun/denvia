@@ -17,7 +17,9 @@ async function resolveRoutes(dir: string) {
         .replace(/.*(routes\/)/g, "")
         .replace(/\.tsx/, "")
         .replace("/index", "");
-      const mod: RouteHandler = await import(`${dir}/${entry.name}`);
+      const url = import.meta.resolve(`${dir}/${entry.name}`);
+      console.log(":::log >> url:::", url);
+      const mod: RouteHandler = await import(url);
       routes.set(key, mod);
     }
   }
@@ -30,6 +32,7 @@ async function resolveStaticAssets(root: string, dir: string) {
       resolveStaticAssets(root, routeName);
     } else {
       const { href } = new URL(routeName, import.meta.url);
+      console.log(":::log >> href:::", href);
       const resp = await fetch(href);
 
       const key = routeName.replace(root, "");
@@ -148,6 +151,7 @@ function devEngine(config: EngineConfig) {
 
       if (pathname.includes("/static/")) {
         const { href } = new URL(`${root}${pathname}`, import.meta.url);
+        console.log(":::log >> href:::", href);
         const resp = await fetch(href);
 
         if (!resp.ok) {
@@ -165,9 +169,9 @@ function devEngine(config: EngineConfig) {
 
       if (pathname.includes("/api/")) {
         const apiPath = pathname.replace(/^\//, "").replace(/\//g, ".");
-        const { loader }: RouteHandler = await import(
-          `${routes}/${apiPath}.ts`
-        );
+        const url = import.meta.resolve(`${routes}/${apiPath}.ts`);
+        console.log(":::log >> api >> url:::", url);
+        const { loader }: RouteHandler = await import(url);
 
         const loaderFnRes =
           loader instanceof Function ? await loader(request) : null;
@@ -182,7 +186,9 @@ function devEngine(config: EngineConfig) {
 
       try {
         const routeName = pathname === "/" ? "/index.tsx" : `${pathname}.tsx`;
-        const handler: RouteHandler = await import(`${routes}${routeName}`);
+        const url = `${routes}${routeName}`;
+        console.log(":::log >> url:::", url);
+        const handler: RouteHandler = await import(url);
 
         if (!handler) {
           return new Response("hello not found", {
