@@ -2,7 +2,7 @@ import { HttpStatus, MIME_TYPE } from "./constant.ts";
 import { LoaderDataContext } from "./ctx.tsx";
 import { log } from "./log.ts";
 import type { EngineConfig, RouteHandler } from "./type.ts";
-import { renderToString } from "npm:react-dom/server";
+import { renderToString } from "react-dom/server";
 
 const routes = new Map<string, RouteHandler>();
 const assets = new Map<string, Uint8Array<ArrayBufferLike>>();
@@ -81,22 +81,19 @@ async function engine(config: EngineConfig) {
           });
         }
 
-        const loaderFnRes = mod.loader instanceof Function
-          ? await mod.loader(request)
-          : null;
+        const loaderFnRes =
+          mod.loader instanceof Function ? await mod.loader(request) : null;
 
-        const res = loaderFnRes instanceof Promise
-          ? await loaderFnRes
-          : loaderFnRes;
+        const res =
+          loaderFnRes instanceof Promise ? await loaderFnRes : loaderFnRes;
 
         if (res instanceof Response) return res;
 
         throw res;
       }
 
-      const routeName = pathname === "/"
-        ? "index"
-        : pathname.replace(/^\//, "");
+      const routeName =
+        pathname === "/" ? "index" : pathname.replace(/^\//, "");
       const handler = routes.get(routeName);
 
       if (!handler) {
@@ -108,9 +105,8 @@ async function engine(config: EngineConfig) {
       const { default: Page, loader } = handler;
 
       const loaderFnRes = loader instanceof Function ? loader(request) : null;
-      const res = loaderFnRes instanceof Promise
-        ? await loaderFnRes
-        : loaderFnRes;
+      const res =
+        loaderFnRes instanceof Promise ? await loaderFnRes : loaderFnRes;
 
       if (res instanceof Response) return res;
 
@@ -173,13 +169,11 @@ function devEngine(config: EngineConfig) {
           `${routes}/${apiPath}.ts`
         );
 
-        const loaderFnRes = loader instanceof Function
-          ? await loader(request)
-          : null;
+        const loaderFnRes =
+          loader instanceof Function ? await loader(request) : null;
 
-        const res = loaderFnRes instanceof Promise
-          ? await loaderFnRes
-          : loaderFnRes;
+        const res =
+          loaderFnRes instanceof Promise ? await loaderFnRes : loaderFnRes;
 
         if (res instanceof Response) return res;
 
@@ -199,9 +193,8 @@ function devEngine(config: EngineConfig) {
         const { default: Page, loader } = handler;
 
         const loaderFnRes = loader instanceof Function ? loader(request) : null;
-        const res = loaderFnRes instanceof Promise
-          ? await loaderFnRes
-          : loaderFnRes;
+        const res =
+          loaderFnRes instanceof Promise ? await loaderFnRes : loaderFnRes;
 
         if (res instanceof Response) return res;
 
@@ -242,7 +235,13 @@ ${html}
  * export MODE=production # for production
  * ```
  */
-export function createServerSideRendering(config: EngineConfig) {
+export function createServerSideRendering(config: EngineConfig):
+  | Promise<{
+      render(request: Request): Promise<Response>;
+    }>
+  | {
+      render(request: Request): Promise<Response>;
+    } {
   const isRootDirEndedWithSlash = config.rootDir.endsWith("/");
   if (isRootDirEndedWithSlash) {
     throw new Error(
