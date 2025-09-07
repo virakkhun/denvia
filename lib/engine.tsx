@@ -7,17 +7,22 @@ import { renderToString } from "react-dom/server";
 const routes = new Map<string, RouteHandler>();
 const assets = new Map<string, Uint8Array<ArrayBufferLike>>();
 
-async function resolveRoutes(dir: string) {
+function buildImportUrl(path: string, rootDir: string) {
+  const { href } = new URL(path, `file://${rootDir}`);
+  return href;
+}
+
+async function resolveRoutes(dir: string, rootDir: string) {
   for await (const entry of Deno.readDir(dir)) {
     const routeName = `${dir}/${entry.name}`;
     if (entry.isDirectory) {
-      resolveRoutes(routeName);
+      resolveRoutes(routeName, rootDir);
     } else {
       const key = routeName
         .replace(/.*(routes\/)/g, "")
         .replace(/\.tsx/, "")
         .replace("/index", "");
-      const url = import.meta.resolve(`${dir}/${entry.name}`);
+      const url = buildImportUrl(`${dir}/${entry.name}`, rootDir);
       console.log(":::log >> url:::", url);
       const mod: RouteHandler = await import(url);
       routes.set(key, mod);
@@ -46,7 +51,7 @@ async function engine(config: EngineConfig) {
   const routesDir = [config.rootDir, "routes"].join("/");
   const staticDir = [config.rootDir, "static"].join("/");
 
-  await resolveRoutes(routesDir);
+  await resolveRoutes(routesDir, config.rootDir);
   await resolveStaticAssets(config.rootDir, staticDir);
   log(routes, assets);
 
@@ -148,6 +153,7 @@ function devEngine(config: EngineConfig) {
   return {
     async render(request: Request): Promise<Response> {
       const { pathname } = new URL(request.url);
+      console.log(":::log >> pathname:::", import.meta.url);
 
       if (pathname.includes("/static/")) {
         const { href } = new URL(`${root}${pathname}`, import.meta.url);
@@ -169,8 +175,8 @@ function devEngine(config: EngineConfig) {
 
       if (pathname.includes("/api/")) {
         const apiPath = pathname.replace(/^\//, "").replace(/\//g, ".");
-        const url = import.meta.resolve(`${routes}/${apiPath}.ts`);
-        console.log(":::log >> api >> url:::", url);
+        const url = buildImportUrl(`${routes}/${apiPath}.ts`, config.rootDir);
+        console.log(":::log >> resolve api >> url:::", url);
         const { loader }: RouteHandler = await import(url);
 
         const loaderFnRes =
@@ -186,7 +192,7 @@ function devEngine(config: EngineConfig) {
 
       try {
         const routeName = pathname === "/" ? "/index.tsx" : `${pathname}.tsx`;
-        const url = `${routes}${routeName}`;
+        const url = buildImportUrl(`${routes}${routeName}`, config.rootDir);
         console.log(":::log >> url:::", url);
         const handler: RouteHandler = await import(url);
 
