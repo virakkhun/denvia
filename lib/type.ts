@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 export interface EngineConfig {
   rootDir: string;
+  moduleLoader: (path: string) => unknown;
 }
 
 export interface RouteHandler {

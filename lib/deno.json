@@ -1,6 +1,6 @@
 {
   "name": "@virakkhun/denvia",
-  "version": "0.1.1-next.2",
+  "version": "0.1.1-next.3",
   "exports": "./mod.ts",
   "license": "MIT",
   "imports": {
