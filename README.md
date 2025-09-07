@@ -66,13 +66,15 @@ deno task start:dev
 
 ## 📂 Directory Structure
 
+```bash
 .
 ├── app
-│   ├── routes # pages & API routes
-│   └── static # static files
+│   ├── routes # pages & API routes
+│   └── static # static files
 ├── deno.json
 ├── deno.lock
 └── server.ts # entry point
+```
 
 - `routes` is where pages, API function are located
   - Page example
