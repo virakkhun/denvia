@@ -17,5 +17,5 @@ jobs:
           echo 'cd into lib directory'
           cd lib
           echo 'publishing...'
-          npx jsr publish --allow-slow-types
+          npx jsr publish
           echo 'done!!!'
