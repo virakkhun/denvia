@@ -48,6 +48,16 @@ export const MIME_TYPE = Object.freeze({
   mov: "video/quicktime",
 });
 
+/**
+ * an enum represet http status code
+ *
+ * ```ts
+ * retur new Response('success', {
+ *  status: HttpStatus.Ok
+ * })
+ * ```
+ * @publicApi
+ **/
 export enum HttpStatus {
   Ok = 200,
   Created = 201,

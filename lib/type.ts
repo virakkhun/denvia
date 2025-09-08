@@ -1,10 +1,17 @@
 import type { ReactNode } from "react";
 
+/**
+ * otpion to create a ssr app
+ * @internal
+ **/
 export interface EngineConfig {
   rootDir: string;
-  moduleLoader: <T>(path: string) => Promise<T>;
 }
 
+/**
+ * route handler contain to export function
+ * @internal
+ **/
 export interface RouteHandler {
   default: () => ReactNode;
   loader: (

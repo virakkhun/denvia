@@ -16,6 +16,16 @@ function buildImportUrl(path: string, rootDir: string) {
   return href;
 }
 
+function buildRoutePath(path: string) {
+  if (path === "/") return "index";
+  return path.replace(/^\//, "").replace(/\//, ".");
+}
+
+function buildDevRoutePath(path: string, type: "api" | "page" = "page") {
+  const name = buildRoutePath(path);
+  return `${name}${type === "api" ? ".ts" : ".tsx"}`;
+}
+
 async function resolveRoutes(dir: string, rootDir: string) {
   for await (const entry of Deno.readDir(dir)) {
     const routeName = `${dir}/${entry.name}`;
@@ -24,11 +34,14 @@ async function resolveRoutes(dir: string, rootDir: string) {
     } else {
       const key = routeName
         .replace(/.*(routes\/)/g, "")
-        .replace(/\.tsx/, "")
+        .replace(/\.tsx?/, "")
         .replace("/index", "");
       const url = buildImportUrl(`${dir}/${entry.name}`, rootDir);
-      console.log(":::log >> url:::", url);
       const mod: RouteHandler = await import(url);
+      if (!mod.default && !mod.loader)
+        throw new Error(
+          `${key} does not export default page or loader function`,
+        );
       routes.set(key, mod);
     }
   }
@@ -40,8 +53,7 @@ async function resolveStaticAssets(root: string, dir: string) {
     if (entry.isDirectory) {
       resolveStaticAssets(root, routeName);
     } else {
-      const { href } = new URL(routeName, import.meta.url);
-      console.log(":::log >> href:::", href);
+      const href = buildImportUrl(routeName, root);
       const resp = await fetch(href);
 
       const key = routeName.replace(root, "");
@@ -84,8 +96,8 @@ async function engine(config: EngineConfig) {
       }
 
       if (pathname.includes("/api/")) {
-        const apiPath = pathname.replace(/^\//, "").replace(/\//g, ".");
-        const mod = routes.get(`${apiPath}.ts`);
+        const apiPath = buildRoutePath(pathname);
+        const mod = routes.get(apiPath);
 
         if (!mod) {
           return new Response(null, {
@@ -104,15 +116,13 @@ async function engine(config: EngineConfig) {
         throw res;
       }
 
-      const routeName =
-        pathname === "/" ? "index" : pathname.replace(/^\//, "");
+      const routeName = buildRoutePath(pathname);
       const handler = routes.get(routeName);
 
-      if (!handler) {
+      if (!handler)
         return new Response(null, {
           status: 404,
         });
-      }
 
       const { default: Page, loader } = handler;
 
@@ -157,12 +167,10 @@ function devEngine(config: EngineConfig) {
   return {
     async render(request: Request): Promise<Response> {
       const { pathname } = new URL(request.url);
-      console.log(":::log >> pathname:::", import.meta.url);
 
       if (pathname.includes("/static/")) {
-        const { href } = new URL(`${root}${pathname}`, import.meta.url);
-        console.log(":::log >> href:::", href);
-        const resp = await fetch(href);
+        const url = buildImportUrl(`${root}${pathname}`, root);
+        const resp = await fetch(url);
 
         if (!resp.ok) {
           return new Response(null, {
@@ -178,11 +186,9 @@ function devEngine(config: EngineConfig) {
       }
 
       if (pathname.includes("/api/")) {
-        const apiPath = pathname.replace(/^\//, "").replace(/\//g, ".");
-        const { loader }: RouteHandler = await config.moduleLoader(
-          `${routes}/${apiPath}.ts`,
-        );
-
+        const apiPath = buildDevRoutePath(pathname, "api");
+        const url = buildImportUrl(`${routes}/${apiPath}`, root);
+        const { loader }: RouteHandler = await import(url);
         const loaderFnRes =
           loader instanceof Function ? await loader(request) : null;
 
@@ -195,10 +201,9 @@ function devEngine(config: EngineConfig) {
       }
 
       try {
-        const routeName = pathname === "/" ? "/index.tsx" : `${pathname}.tsx`;
-        const handler: RouteHandler = await config.moduleLoader(
-          `${routes}${routeName}`,
-        );
+        const routeName = buildDevRoutePath(pathname);
+        const url = buildImportUrl(`${routes}/${routeName}`, root);
+        const handler: RouteHandler = await import(url);
 
         if (!handler) {
           return new Response("hello not found", {
@@ -246,11 +251,21 @@ ${html}
 
 /**
  * to create a server side rendering engine for both dev and production
+ *
  * ```bash
  * export MODE=dev # for development
  * export MODE=production # for production
  * ```
- */
+ * create a minimal setup for the app
+ * ```ts
+ * const { render } = createServerSideRendering({
+ *  rootDir: `${Deno.cwd()}/app`
+ * })
+ *
+ * Deno.serve(req => render(req))
+ * ```
+ * @publicApi
+ **/
 export function createServerSideRendering(config: EngineConfig):
   | Promise<{
       render(request: Request): Promise<Response>;
