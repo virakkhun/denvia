@@ -3,14 +3,12 @@ import { type Context, createContext, useContext } from "react";
 /**
  * a context provider to provide data to page
  * @internal
- **/
+ */
 export const LoaderDataContext: Context<unknown> = createContext<unknown>({});
 
-type ContextInfer<T> = T extends (req: Request) => Promise<infer U>
-  ? U
-  : T extends (req: Request) => infer U
-    ? U
-    : T;
+type ContextInfer<T> = T extends (...args: never[]) => Promise<infer U> ? U
+  : T extends (...args: never[]) => infer U ? U
+  : T;
 
 /**
  * a function to get data response from loader function
@@ -27,7 +25,7 @@ type ContextInfer<T> = T extends (req: Request) => Promise<infer U>
  * }
  * ```
  * @publicApi
- **/
+ */
 export function useLoaderData<T>(): Exclude<ContextInfer<T>, Response> {
   return useContext(LoaderDataContext) as Exclude<ContextInfer<T>, Response>;
 }

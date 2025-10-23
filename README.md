@@ -80,9 +80,15 @@ deno task start:dev
   - Page example
 
   ```tsx
-  // index.tsx
+  import { useLoaderData } from '@virakkhun/denvia'
+  // blog.$id.tsx
+  export function loader(req: Request, params: Record<string, string>) {
+    return params
+  }
+  
   export default function () {
-    return <div>this is homepage</div>;
+    const { id } = useLoaderData<typeof loader>()
+    return <div>Blog - {id}</div>;
   }
   ```
 
@@ -115,7 +121,7 @@ Deno.serve((req) => render(req));
 - 🖼 Static file serving
 - ⚡ Zero config — just server.ts
 
-💡 Why Denvia?
+## 💡 Why Denvia?
 
 - Declarative dependencies → pages only ship what they import
 - Minimal boilerplate → filesystem first, no extra setup
