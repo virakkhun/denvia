@@ -76,27 +76,33 @@ deno task start:dev
 └── server.ts # entry point
 ```
 
-- `routes` is where pages, API function are located
-  - Page example
+- `routes/*.tsx` is where pages
 
-  ```tsx
-  // index.tsx
-  export default function () {
-    return <div>this is homepage</div>;
-  }
-  ```
+```tsx
+import { useLoaderData } from '@virakkhun/denvia'
+// blog.$id.tsx
+export function loader(req: Request, params: Record<string, string>) {
+  return params
+}
 
-  - API example
+export default function () {
+  const { id } = useLoaderData<typeof loader>()
+  return <div>Blog - {id}</div>;
+}
+```
 
-  ```ts
-  //api.login.ts
-  export function loader(req: Request) {
-    return new Response("this is an api route");
-  }
-  ```
+- `routes/api.*` API function are located
 
-> `static` static live here
-> `server.ts` minimal app entry point
+```ts
+//api.login.ts
+export function loader(req: Request) {
+  return new Response("this is an api route");
+}
+```
+
+- `static` static live here, like images, styles, etc...
+
+- `server.ts` minimal app entry point
 
 ```ts
 import { createServerSideRendering } from "@virakkhun/denvia";
@@ -115,7 +121,7 @@ Deno.serve((req) => render(req));
 - 🖼 Static file serving
 - ⚡ Zero config — just server.ts
 
-💡 Why Denvia?
+## 💡 Why Denvia?
 
 - Declarative dependencies → pages only ship what they import
 - Minimal boilerplate → filesystem first, no extra setup
