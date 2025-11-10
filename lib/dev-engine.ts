@@ -49,10 +49,11 @@ export async function devEngine(config: EngineConfig) {
 
       if (pathname.includes("/api/")) {
         const apiPath = buildDevRoutePath(pathname, "api");
-        const url = buildImportUrl(`${routes}/${apiPath}`, root);
+        const { route, params } = routeMatcher(devRoutesSet, apiPath);
+        const url = buildImportUrl(`${routes}/${route || apiPath}`, root);
         const { loader }: RouteHandler = await import(url);
         const loaderFnRes = loader instanceof Function
-          ? await loader(request, {})
+          ? await loader(request, params)
           : null;
 
         const res = loaderFnRes instanceof Promise

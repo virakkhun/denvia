@@ -36,6 +36,7 @@ export function routeMatcher(routeSet: Set<string>, key: string) {
         params[key] = incomingRoute[idx];
         return true;
       }
+
       return v === incomingRoute[idx];
     });
 

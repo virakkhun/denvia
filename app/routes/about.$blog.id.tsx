@@ -1,7 +1,7 @@
 import { useLoaderData } from "../../lib/ctx.tsx";
 
-export function loader(_: Request, params: { blog: string; id: string }) {
-  return params;
+export function loader(_: Request) {
+  return { id: 1, blog: "hello" };
 }
 
 export default function () {
