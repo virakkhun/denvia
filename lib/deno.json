@@ -1,11 +1,10 @@
 {
   "name": "@virakkhun/denvia",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "exports": "./mod.ts",
   "license": "MIT",
   "imports": {
-    "react": "npm:react@^19.0.0",
-    "react-dom": "npm:react-dom@^19.0.0",
-    "@types/react": "npm:@types/react@^19.0.1"
+    "preact": "npm:preact@^10.26.6",
+    "preact-render-to-string": "npm:preact-render-to-string@^6.5.13"
   }
 }

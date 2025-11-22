@@ -1,9 +1,9 @@
-import { renderToString } from "react-dom/server";
 import { LoaderDataContext } from "./ctx.tsx";
-import type { ReactNode } from "react";
+import type * as P from "preact";
+import { renderToString } from "preact-render-to-string";
 
 export function renderer(
-  ctx: { Page: () => ReactNode; contextValue: unknown },
+  ctx: { Page: () => P.VNode; contextValue: unknown },
 ) {
   const html = renderToString(
     <LoaderDataContext.Provider value={ctx.contextValue}>
@@ -17,7 +17,7 @@ ${html}
 `,
     {
       headers: {
-        "X-Powered-By": "denvia",
+        "X-Powered-By": "@virakkhun/denvia",
         "Content-Type": "text/html",
       },
     },

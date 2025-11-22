@@ -12,8 +12,11 @@
   },
   "workspace": ["./lib/"],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
-    "jsxImportSourceTypes": "@types/react"
+    "jsx": "precompile",
+    "jsxImportSource": "preact"
+  },
+  "imports": {
+    "preact": "npm:preact@^10.26.6",
+    "preact-render-to-string": "npm:preact-render-to-string@^6.5.13"
   }
 }

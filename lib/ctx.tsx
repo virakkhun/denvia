@@ -1,4 +1,5 @@
-import { type Context, createContext, useContext } from "react";
+import { type Context, createContext } from "preact";
+import { useContext } from "preact/hooks";
 
 /**
  * a context provider to provide data to page

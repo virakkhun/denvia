@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { VNode } from "preact";
 
 /**
  * otpion to create a ssr app
@@ -13,7 +13,7 @@ export interface EngineConfig {
  * @internal
  */
 export interface RouteHandler {
-  default: () => ReactNode;
+  default: () => VNode;
   loader: (
     request: Request,
     params: Record<string, string>,
