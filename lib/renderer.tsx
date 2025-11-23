@@ -1,9 +1,9 @@
 import { LoaderDataContext } from "./ctx.tsx";
-import type * as P from "preact";
+import type { VNode } from "preact";
 import { renderToString } from "preact-render-to-string";
 
 export function renderer(
-  ctx: { Page: () => P.VNode; contextValue: unknown },
+  ctx: { Page: () => VNode; contextValue: unknown },
 ) {
   const html = renderToString(
     <LoaderDataContext.Provider value={ctx.contextValue}>
