@@ -128,7 +128,7 @@ export async function engine(config: EngineConfig) {
         });
       }
 
-      const { default: Page, loader } = handler;
+      const { default: Page, loader, headers: headersFn } = handler;
 
       const loaderFnRes = loader instanceof Function
         ? loader(request, params)
@@ -139,8 +139,13 @@ export async function engine(config: EngineConfig) {
 
       if (res instanceof Response) return res;
 
+      const headers = headersFn instanceof Function
+        ? headersFn(request, params, res)
+        : {};
+
       return renderer({
         Page,
+        headers,
         contextValue: res,
       });
     },

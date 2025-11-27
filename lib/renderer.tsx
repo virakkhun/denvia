@@ -3,7 +3,11 @@ import type { VNode } from "preact";
 import { renderToString } from "preact-render-to-string";
 
 export function renderer(
-  ctx: { Page: () => VNode; contextValue: unknown },
+  ctx: {
+    Page: () => VNode;
+    headers: Record<string, string>;
+    contextValue: unknown;
+  },
 ) {
   const html = renderToString(
     <LoaderDataContext.Provider value={ctx.contextValue}>
@@ -19,6 +23,7 @@ ${html}
       headers: {
         "X-Powered-By": "@virakkhun/denvia",
         "Content-Type": "text/html",
+        ...ctx.headers,
       },
     },
   );

@@ -1,6 +1,7 @@
 # denvia ⚡
 
-A Deno-powered, get inspired by Remix, file-system based routing library for building server-side rendered applications.
+A Deno-powered, get inspired by Remix, file-system based routing library for
+building server-side rendered applications.
 
 ## 🚀 Quickstart
 
@@ -42,7 +43,8 @@ deno add jsr:@virakkhun/denvia
 3. Configure deno.json
 
 > [!IMPORTANT]
-> create tasks and name as your preferences, but make sure to export MODE=production to run the app in production mode
+> create tasks and name as your preferences, but make sure to export
+> MODE=production to run the app in production mode
 
 ```json
 {
@@ -79,14 +81,14 @@ deno task start:dev
 - `routes/*.tsx` is where pages
 
 ```tsx
-import { useLoaderData } from '@virakkhun/denvia'
+import { useLoaderData } from "@virakkhun/denvia";
 // blog.$id.tsx
 export function loader(req: Request, params: Record<string, string>) {
-  return params
+  return params;
 }
 
 export default function () {
-  const { id } = useLoaderData<typeof loader>()
+  const { id } = useLoaderData<typeof loader>();
   return <div>Blog - {id}</div>;
 }
 ```

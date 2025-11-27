@@ -18,4 +18,9 @@ export interface RouteHandler {
     request: Request,
     params: Record<string, string>,
   ) => Promise<unknown> | Promise<Response> | Response | unknown;
+  headers: (
+    request: Request,
+    params: Record<string, string>,
+    loaderValue: unknown,
+  ) => Record<string, string>;
 }

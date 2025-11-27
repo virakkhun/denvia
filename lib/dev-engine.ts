@@ -80,19 +80,25 @@ export async function devEngine(config: EngineConfig) {
           });
         }
 
-        const { default: Page, loader } = handler;
+        const { default: Page, loader, headers: headersFn } = handler;
 
         const loaderFnRes = loader instanceof Function
           ? loader(request, params)
           : null;
+
         const res = loaderFnRes instanceof Promise
           ? await loaderFnRes
           : loaderFnRes;
 
         if (res instanceof Response) return res;
 
+        const headers = headersFn instanceof Function
+          ? headersFn(request, params, res)
+          : {};
+
         return renderer({
           Page,
+          headers,
           contextValue: res,
         });
       } catch (error) {
