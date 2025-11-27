@@ -15,6 +15,7 @@ export function log(
     pagesReport.push({
       default: key,
       loader: status(mod.loader),
+      headers: status(mod.headers),
     });
   }
 
