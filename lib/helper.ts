@@ -23,19 +23,6 @@ export function createLoader<R>(fn: LoaderFn<R>): LoaderFn<R> {
   return fn;
 }
 
-export const loader = createLoader(() => {
-  return { hello: 1 };
-});
-
-export const headers = createHeaders<typeof loader>((ctx) => {
-  const h = new Headers();
-
-  h.append("x-now", Date.now().valueOf().toString());
-  h.append("x-data", ctx.loaderValue.hello?.toString());
-
-  return h;
-});
-
 /**
  * A helper function to create header for the Response
  * @note headers will be write only with document
