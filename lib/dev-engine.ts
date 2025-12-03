@@ -53,7 +53,7 @@ export async function devEngine(config: EngineConfig) {
         const url = buildImportUrl(`${routes}/${route || apiPath}`, root);
         const { loader }: RouteHandler = await import(url);
         const loaderFnRes = loader instanceof Function
-          ? await loader(request, params)
+          ? await loader(request, { params })
           : null;
 
         const res = loaderFnRes instanceof Promise
@@ -83,7 +83,7 @@ export async function devEngine(config: EngineConfig) {
         const { default: Page, loader, headers: headersFn } = handler;
 
         const loaderFnRes = loader instanceof Function
-          ? loader(request, params)
+          ? loader(request, { params })
           : null;
 
         const res = loaderFnRes instanceof Promise
@@ -93,8 +93,8 @@ export async function devEngine(config: EngineConfig) {
         if (res instanceof Response) return res;
 
         const headers = headersFn instanceof Function
-          ? headersFn(request, params, res)
-          : {};
+          ? headersFn({ request, params, loaderValue: res })
+          : new Headers();
 
         return renderer({
           Page,

@@ -107,7 +107,7 @@ export async function engine(config: EngineConfig) {
         }
 
         const loaderFnRes = mod.loader instanceof Function
-          ? await mod.loader(request, params)
+          ? await mod.loader(request, { params })
           : null;
 
         const res = loaderFnRes instanceof Promise
@@ -131,7 +131,7 @@ export async function engine(config: EngineConfig) {
       const { default: Page, loader, headers: headersFn } = handler;
 
       const loaderFnRes = loader instanceof Function
-        ? loader(request, params)
+        ? loader(request, { params })
         : null;
       const res = loaderFnRes instanceof Promise
         ? await loaderFnRes
@@ -140,8 +140,8 @@ export async function engine(config: EngineConfig) {
       if (res instanceof Response) return res;
 
       const headers = headersFn instanceof Function
-        ? headersFn(request, params, res)
-        : {};
+        ? headersFn({ request, params, loaderValue: res })
+        : new Headers();
 
       return renderer({
         Page,

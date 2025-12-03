@@ -1,6 +1,8 @@
-export function headers(req: Request) {
+import { HeaderContext } from "@virakkhun/denvia";
+
+export function headers({ request }: HeaderContext) {
   return {
-    "Set-Cookie": `url=${req.url}`,
+    "Set-Cookie": `url=${request.url}`,
   };
 }
 

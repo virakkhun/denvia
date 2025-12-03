@@ -5,7 +5,7 @@ import { renderToString } from "preact-render-to-string";
 export function renderer(
   ctx: {
     Page: () => VNode;
-    headers: Record<string, string>;
+    headers: Headers;
     contextValue: unknown;
   },
 ) {
@@ -15,16 +15,16 @@ export function renderer(
     </LoaderDataContext.Provider>,
   );
 
+  const headers = ctx.headers;
+  headers.append("X-Powered-By", "@virakkhun/denvia");
+  headers.append("Content-Type", "text/html");
+
   return new Response(
     `<!DOCTYPE html>
 ${html}
 `,
     {
-      headers: {
-        "X-Powered-By": "@virakkhun/denvia",
-        "Content-Type": "text/html",
-        ...ctx.headers,
-      },
+      headers,
     },
   );
 }

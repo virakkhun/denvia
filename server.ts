@@ -4,4 +4,4 @@ const { render } = await createServerSideRendering({
   rootDir: `${Deno.cwd()}/app`,
 });
 
-Deno.serve((req) => render(req));
+Deno.serve(async (req) => await render(req));

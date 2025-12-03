@@ -7,7 +7,12 @@ import { useContext } from "preact/hooks";
  */
 export const LoaderDataContext: Context<unknown> = createContext<unknown>({});
 
-type ContextInfer<T> = T extends (...args: never[]) => Promise<infer U> ? U
+/**
+ * a context type inferer
+ * @internal
+ */
+export type ContextInfer<T> = T extends (...args: never[]) => Promise<infer U>
+  ? U
   : T extends (...args: never[]) => infer U ? U
   : T;
 
